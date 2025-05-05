@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood Music Recommender</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-headphones"></i>
+                <span>MoBRec</span>
+            </div>
+            <ul class="nav-links">
+                <li class="active"><a href="#"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="#"><i class="fas fa-search"></i> Search</a></li>
+                <li><a href="#"><i class="fas fa-book"></i> Your Library</a></li>
+                <li><a href="#"><i class="fas fa-plus-square"></i> Create Playlist</a></li>
+                <li><a href="#"><i class="fas fa-heart"></i> Liked Songs</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="nav-btn"><i class="fas fa-chevron-left"></i></button>
+                    <button class="nav-btn"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="header-right">
+                    <button id="spotify-auth-btn" class="auth-btn">
+                        <i class="fab fa-spotify"></i> Connect Spotify
+                    </button>
+                </div>
+            </header>
+
+            <!-- Mood Detection Section -->
+            <section class="mood-section">
+                <h1>How are you feeling today?</h1>
+                <div class="mood-options">
+                    <div class="mood-card" data-mood="happy">
+                        <i class="fas fa-smile"></i>
+                        <span>Happy</span>
+                    </div>
+                    <div class="mood-card" data-mood="sad">
+                        <i class="fas fa-sad-tear"></i>
+                        <span>Sad</span>
+                    </div>
+                    <div class="mood-card" data-mood="angry">
+                        <i class="fas fa-angry"></i>
+                        <span>Angry</span>
+                    </div>
+                    <div class="mood-card" data-mood="calm">
+                        <i class="fas fa-spa"></i>
+                        <span>Calm</span>
+                    </div>
+                    <div class="mood-card" data-mood="energetic">
+                        <i class="fas fa-bolt"></i>
+                        <span>Energetic</span>
+                    </div>
+                    <div class="mood-card" data-mood="romantic">
+                        <i class="fas fa-heart"></i>
+                        <span>Romantic</span>
+                    </div>
+                </div>
+
+                <div class="text-input-section">
+                    <h3>Or describe your mood in words:</h3>
+                    <textarea id="mood-text" placeholder="I'm feeling..."></textarea>
+                    <button id="detect-mood-btn" class="primary-btn">Detect Mood</button>
+                </div>
+
+                <div class="language-selection">
+                    <h3>Select languages for recommendations:</h3>
+                    <div class="language-options">
+                        <label class="language-checkbox">
+                            <input type="checkbox" name="language" value="en" checked>
+                            <span>English</span>
+                        </label>
+                        <label class="language-checkbox">
+                            <input type="checkbox" name="language" value="hi">
+                            <span>Hindi</span>
+                        </label>
+                        <label class="language-checkbox">
+                            <input type="checkbox" name="language" value="ta">
+                            <span>Tamil</span>
+                        </label>
+                        <label class="language-checkbox">
+                            <input type="checkbox" name="language" value="te">
+                            <span>Telugu</span>
+                        </label>
+                        <label class="language-checkbox">
+                            <input type="checkbox" name="language" value="ml">
+                            <span>Malayalam</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button id="use-history-btn" class="secondary-btn">
+                    <i class="fas fa-history"></i> Use My Listening History
+                </button>
+            </section>
+
+            <!-- Recommendations Section -->
+            <section class="recommendations-section" id="recommendations-section" style="display: none;">
+                <h2>Your Mood-Based Recommendations</h2>
+                <div class="recommendations-grid" id="recommendations-grid">
+                    <!-- Recommendations will be loaded here -->
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Player (fixed at bottom) -->
+    <div class="player" id="player" style="display: none;">
+        <div class="player-left">
+            <div class="player-album-art" id="player-album-art">
+                <img src="" alt="Album Art">
+            </div>
+            <div class="player-track-info">
+                <h4 id="player-track-name">Track Name</h4>
+                <p id="player-track-artist">Artist</p>
+            </div>
+        </div>
+        <div class="player-center">
+            <div class="player-controls">
+                <button class="player-btn"><i class="fas fa-random"></i></button>
+                <button class="player-btn"><i class="fas fa-step-backward"></i></button>
+                <button class="player-btn play-btn" id="play-btn"><i class="fas fa-play"></i></button>
+                <button class="player-btn"><i class="fas fa-step-forward"></i></button>
+                <button class="player-btn"><i class="fas fa-redo"></i></button>
+            </div>
+            <div class="player-progress">
+                <span class="time-start" id="time-start">0:00</span>
+                <div class="progress-bar" id="progress-bar">
+                    <div class="progress" id="progress"></div>
+                </div>
+                <span class="time-end" id="time-end">0:30</span>
+            </div>
+        </div>
+        <div class="player-right">
+            <button class="player-btn"><i class="fas fa-microphone"></i></button>
+            <button class="player-btn"><i class="fas fa-list-ul"></i></button>
+            <button class="player-btn"><i class="fas fa-volume-up"></i></button>
+            <div class="volume-slider">
+                <input type="range" min="0" max="100" value="80" id="volume-slider">
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
