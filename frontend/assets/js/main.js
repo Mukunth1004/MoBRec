@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // DOM Elements
     const moodCards = document.querySelectorAll('.mood-card');
     const detectMoodBtn = document.getElementById('detect-mood-btn');
@@ -17,29 +17,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const timeStart = document.getElementById('time-start');
     const timeEnd = document.getElementById('time-end');
     const volumeSlider = document.getElementById('volume-slider');
-    
+
     // Audio element for preview playback
     const audio = new Audio();
     let currentTrack = null;
     let isPlaying = false;
     let progressInterval = null;
-    
+
     // Spotify OAuth
     let spotifyAccessToken = localStorage.getItem('spotify_access_token');
-    
+
     // Check for Spotify callback on page load
     checkForSpotifyCallback();
     updateAuthUI();
-    
+
     // Event Listeners
     moodCards.forEach(card => {
-        card.addEventListener('click', function() {
+        card.addEventListener('click', function () {
             const mood = this.getAttribute('data-mood');
             getRecommendations(mood);
         });
     });
-    
-    detectMoodBtn.addEventListener('click', function() {
+
+    detectMoodBtn.addEventListener('click', function () {
         const text = moodText.value.trim();
         if (text) {
             detectEmotionFromText(text);
@@ -47,44 +47,42 @@ document.addEventListener('DOMContentLoaded', function() {
             showAlert('Please describe your mood first');
         }
     });
-    
-    useHistoryBtn.addEventListener('click', function() {
+
+    useHistoryBtn.addEventListener('click', function () {
         if (spotifyAccessToken) {
             predictEmotionFromHistory();
         } else {
             showAlert('Please connect your Spotify account first');
         }
     });
-    
-    spotifyAuthBtn.addEventListener('click', function() {
+
+    spotifyAuthBtn.addEventListener('click', function () {
         if (spotifyAccessToken) {
             disconnectSpotify();
         } else {
             initiateSpotifyAuth();
         }
     });
-    
+
     playBtn.addEventListener('click', togglePlayback);
     progressBar.addEventListener('click', seekPlayback);
     volumeSlider.addEventListener('input', updateVolume);
     audio.addEventListener('timeupdate', updateProgressBar);
     audio.addEventListener('ended', handlePlaybackEnded);
-    
-    // Double tap and triple tap detection for player controls
+
     setupGestureControls();
 
-    // Functions
     function checkForSpotifyCallback() {
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('code');
         const error = urlParams.get('error');
-        
+
         if (error) {
             showAlert(`Spotify connection failed: ${error}`);
             window.history.replaceState({}, document.title, window.location.pathname);
             return;
         }
-        
+
         if (code && !spotifyAccessToken) {
             fetch(`/spotify-callback?code=${code}`)
                 .then(handleResponse)
@@ -128,13 +126,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    function disconnectSpotify() {
-        localStorage.removeItem('spotify_access_token');
-        spotifyAccessToken = null;
-        updateAuthUI();
-        showAlert('Disconnected from Spotify', 'success');
-    }
-
     function detectEmotionFromText(text) {
         showLoading(true);
         fetch('/detect-emotion', {
@@ -144,19 +135,19 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify({ text: text })
         })
-        .then(handleResponse)
-        .then(data => {
-            if (data.emotion) {
-                getRecommendations(data.emotion);
-            } else {
-                showAlert('Could not detect emotion from text');
-            }
-        })
-        .catch(error => {
-            console.error('Emotion detection error:', error);
-            showAlert('Failed to detect emotion');
-        })
-        .finally(() => showLoading(false));
+            .then(handleResponse)
+            .then(data => {
+                if (data.emotion) {
+                    getRecommendations(data.emotion);
+                } else {
+                    showAlert('Could not detect emotion from text');
+                }
+            })
+            .catch(error => {
+                console.error('Emotion detection error:', error);
+                showAlert('Failed to detect emotion');
+            })
+            .finally(() => showLoading(false));
     }
 
     function predictEmotionFromHistory() {
@@ -166,32 +157,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Authorization': `Bearer ${spotifyAccessToken}`
             }
         })
-        .then(handleResponse)
-        .then(data => {
-            if (data.history) {
-                return fetch('/detect-emotion', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ history: data.history })
-                });
-            }
-            throw new Error('No history data received');
-        })
-        .then(handleResponse)
-        .then(data => {
-            if (data.emotion) {
-                getRecommendations(data.emotion);
-            } else {
-                showAlert('Could not predict emotion from history');
-            }
-        })
-        .catch(error => {
-            console.error('History prediction error:', error);
-            showAlert('Failed to predict emotion from history');
-        })
-        .finally(() => showLoading(false));
+            .then(handleResponse)
+            .then(data => {
+                if (data.history) {
+                    return fetch('/detect-emotion', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ history: data.history })
+                    });
+                }
+                throw new Error('No history data received');
+            })
+            .then(handleResponse)
+            .then(data => {
+                if (data.emotion) {
+                    getRecommendations(data.emotion);
+                } else {
+                    showAlert('Could not predict emotion from history');
+                }
+            })
+            .catch(error => {
+                console.error('History prediction error:', error);
+                showAlert('Failed to predict emotion from history');
+            })
+            .finally(() => showLoading(false));
     }
 
     async function getRecommendations(emotion) {
@@ -211,10 +202,10 @@ document.addEventListener('DOMContentLoaded', function() {
             showLoading(false);
         }
     }
-    
+
     function displayRecommendations(tracks) {
         recommendationsGrid.innerHTML = '';
-        
+
         tracks.forEach(track => {
             const trackCard = document.createElement('div');
             trackCard.className = 'track-card';
@@ -224,14 +215,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p>${track.artists.join(', ')}</p>
                 ${track.preview_url ? '<div class="play-icon"><i class="fas fa-play"></i></div>' : ''}
             `;
-            
-            trackCard.addEventListener('click', function() {
+
+            trackCard.addEventListener('click', function () {
                 playTrack(track);
             });
-            
+
             recommendationsGrid.appendChild(trackCard);
         });
-        
+
         recommendationsSection.style.display = 'block';
         window.scrollTo({
             top: recommendationsSection.offsetTop,
@@ -240,33 +231,26 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function playTrack(track) {
-        // Stop current playback
         audio.pause();
         clearInterval(progressInterval);
-        
-        // Update current track
+
         currentTrack = track;
-        
-        // Update player UI
         playerAlbumArt.src = track.image || 'https://via.placeholder.com/56';
         playerTrackName.textContent = track.name;
         playerTrackArtist.textContent = track.artists.join(', ');
-        
-        // Set audio source
+
         if (track.preview_url) {
             audio.src = track.preview_url;
-            timeEnd.textContent = '0:30'; // Preview is usually 30 seconds
+            timeEnd.textContent = '0:30';
             playBtn.disabled = false;
         } else {
             audio.src = '';
             timeEnd.textContent = '0:00';
             playBtn.disabled = true;
         }
-        
-        // Show player
+
         player.style.display = 'flex';
-        
-        // Play if preview available
+
         if (track.preview_url) {
             audio.play()
                 .then(() => {
@@ -283,28 +267,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function togglePlayback() {
         if (!currentTrack || !currentTrack.preview_url) return;
-        
+
         if (isPlaying) {
             audio.pause();
         } else {
             audio.play();
         }
-        
+
         isPlaying = !isPlaying;
         updatePlayButton();
     }
 
     function updatePlayButton() {
-        if (isPlaying) {
-            playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-        } else {
-            playBtn.innerHTML = '<i class="fas fa-play"></i>';
-        }
+        playBtn.innerHTML = isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
     }
 
     function seekPlayback(e) {
         if (!currentTrack || !currentTrack.preview_url) return;
-        
+
         const percent = e.offsetX / this.offsetWidth;
         audio.currentTime = percent * audio.duration;
         updateProgressBar();
@@ -314,8 +294,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (audio.duration) {
             const percent = (audio.currentTime / audio.duration) * 100;
             progress.style.width = `${percent}%`;
-            
-            // Update time display
+
             const currentMinutes = Math.floor(audio.currentTime / 60);
             const currentSeconds = Math.floor(audio.currentTime % 60);
             timeStart.textContent = `${currentMinutes}:${currentSeconds < 10 ? '0' : ''}${currentSeconds}`;
@@ -334,89 +313,42 @@ document.addEventListener('DOMContentLoaded', function() {
     function setupGestureControls() {
         let tapCount = 0;
         let tapTimer = null;
-        
-        document.addEventListener('click', function(e) {
+
+        document.addEventListener('click', function (e) {
             tapCount++;
-            
+
             if (tapCount === 1) {
                 tapTimer = setTimeout(() => {
                     tapCount = 0;
                 }, 300);
             } else if (tapCount === 2) {
                 clearTimeout(tapTimer);
+                togglePlayback();
                 tapCount = 0;
-                
-                // Double tap - skip 5 seconds
-                if (currentTrack && currentTrack.preview_url) {
-                    if (e.clientX < window.innerWidth / 2) {
-                        // Left side - skip backward
-                        audio.currentTime = Math.max(0, audio.currentTime - 5);
-                    } else {
-                        // Right side - skip forward
-                        audio.currentTime = Math.min(audio.duration, audio.currentTime + 5);
-                    }
-                    updateProgressBar();
-                }
-            } else if (tapCount === 3) {
-                clearTimeout(tapTimer);
-                tapCount = 0;
-                
-                // Triple tap - play most replayed part (15-25s)
-                if (currentTrack && currentTrack.preview_url) {
-                    audio.currentTime = 15;
-                    if (!isPlaying) {
-                        audio.play();
-                        isPlaying = true;
-                        updatePlayButton();
-                    }
-                    
-                    // After 10 seconds, return to start
-                    setTimeout(() => {
-                        audio.currentTime = 0;
-                        updateProgressBar();
-                    }, 10000);
-                }
             }
         });
     }
 
-    function showLoading(show) {
-        const loader = document.getElementById('loading-overlay') || createLoader();
-        loader.style.display = show ? 'flex' : 'none';
-    }
-
-    function createLoader() {
-        const loader = document.createElement('div');
-        loader.id = 'loading-overlay';
-        loader.innerHTML = '<div class="loader"></div>';
-        loader.style.display = 'none';
-        document.body.appendChild(loader);
-        return loader;
-    }
-
     function showAlert(message, type = 'error') {
         const alert = document.createElement('div');
-        alert.className = `alert ${type}`;
+        alert.classList.add('alert', type);
         alert.textContent = message;
+
         document.body.appendChild(alert);
-        
-        setTimeout(() => {
-            alert.classList.add('show');
-        }, 10);
-        
-        setTimeout(() => {
-            alert.classList.remove('show');
-            setTimeout(() => {
-                document.body.removeChild(alert);
-            }, 300);
-        }, 3000);
+        setTimeout(() => alert.remove(), 3000);
+    }
+
+    function showLoading(isLoading) {
+        if (isLoading) {
+            document.body.classList.add('loading');
+        } else {
+            document.body.classList.remove('loading');
+        }
     }
 
     function handleResponse(response) {
         if (!response.ok) {
-            return response.json().then(err => {
-                throw new Error(err.detail || 'Request failed');
-            });
+            return response.json().then(error => Promise.reject(error));
         }
         return response.json();
     }
