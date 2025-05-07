@@ -71,8 +71,10 @@ A web application that recommends music based on user mood and tracks the user's
 
 Here is a preview of the app:
 
-[Screenshot]("D:\Projects\MoBRec\screenshot\Screenshot 2025-05-06 111950.png")  <!-- Replace with the actual image path -->
-[Screenshot]("D:\Projects\MoBRec\screenshot\Screenshot 2025-05-07 115628.png")
+![Screenshot 2025-05-06 111950](https://github.com/user-attachments/assets/dc553a2d-1976-4dd1-828a-b02831429570)
+![Screenshot 2025-05-07 115628](https://github.com/user-attachments/assets/8d8e96ca-e97a-4870-a58b-b2aead1a0cdd)
+
+
 ---
 
 ## Contributing
