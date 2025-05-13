@@ -30,7 +30,7 @@ A web application that recommends music based on user mood and tracks the user's
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/your-username/mood-music-recommendation.git
+    git clone https://github.com/Mukunth1004/MoBRec.git
     cd mood-music-recommendation
     ```
 
